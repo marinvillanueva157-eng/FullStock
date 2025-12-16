@@ -1,26 +1,91 @@
+// --- UTILITIES GLOBALES ---
+window.formatCurrency = (value) => {
+    return new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(value);
+};
+
+const showToast = (message) => {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    // Forzar reflow para animación
+    void toast.offsetWidth;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            if (document.body.contains(toast)) {
+                document.body.removeChild(toast);
+            }
+        }, 300);
+    }, 3000);
+};
+
+const updateCartCount = () => {
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement && window.cartService) {
+        cartCountElement.textContent = window.cartService.count();
+    }
+};
+
+// --- CART SERVICE (Global) ---
+const cart = {
+    get: () => JSON.parse(localStorage.getItem('fullstock_cart')) || [],
+    save: (data) => {
+        localStorage.setItem('fullstock_cart', JSON.stringify(data));
+        updateCartCount();
+    },
+    add: (productId, quantity = 1) => {
+        const currentCart = cart.get();
+        const existingItem = currentCart.find(item => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            currentCart.push({ id: productId, quantity });
+        }
+        cart.save(currentCart);
+        showToast('¡Producto agregado al carrito!');
+    },
+    update: (productId, quantity) => {
+        let currentCart = cart.get();
+        const existingItem = currentCart.find(item => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity = parseInt(quantity);
+            if (existingItem.quantity <= 0) {
+                currentCart = currentCart.filter(item => item.id !== productId);
+            }
+            cart.save(currentCart);
+        }
+    },
+    remove: (productId) => {
+        let currentCart = cart.get();
+        currentCart = currentCart.filter(item => item.id !== productId);
+        cart.save(currentCart);
+        showToast('Producto eliminado');
+    },
+    clear: () => {
+        cart.save([]);
+        showToast('Carrito vaciado');
+    },
+    count: () => {
+        return cart.get().reduce((total, item) => total + item.quantity, 0);
+    }
+};
+
+// Exponer servicio globalmente
+window.cartService = cart;
+
 document.addEventListener('DOMContentLoaded', () => {
     const headerContainer = document.getElementById('main-header');
     const footerContainer = document.getElementById('main-footer');
     const currentPage = window.location.pathname.split('/').pop();
-
-    // --- CART UTILITIES (Lado del cliente) ---
-    const cart = {
-        get: () => JSON.parse(localStorage.getItem('fullstock_cart')) || [],
-        add: (productId, quantity) => {
-            const currentCart = cart.get();
-            const existingItem = currentCart.find(item => item.id === productId);
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                currentCart.push({ id: productId, quantity });
-            }
-            localStorage.setItem('fullstock_cart', JSON.stringify(currentCart));
-            updateCartCount();
-        },
-        count: () => {
-            return cart.get().reduce((total, item) => total + item.quantity, 0);
-        }
-    };
 
     // --- TEMPLATES ---
     const headerHTML = `
@@ -83,27 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (headerContainer) headerContainer.innerHTML = headerHTML;
     if (footerContainer) footerContainer.innerHTML = footerHTML;
     
-    // --- FUNCIONES GLOBALES ---
-    const updateCartCount = () => {
-        const cartCountElement = document.getElementById('cart-count');
-        if (cartCountElement) {
-            cartCountElement.textContent = cart.count();
-        }
-    };
-    
-    // Formatear precios a ARS
-    window.formatCurrency = (value) => {
-        return new Intl.NumberFormat('es-AR', {
-            style: 'currency',
-            currency: 'ARS',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(value);
-    };
-
     // --- INICIALIZACIÓN ---
     updateCartCount();
-
-    // Adjuntar la utilidad del carrito a window para que otros scripts la puedan usar
-    window.cartService = cart;
 });

@@ -595,3 +595,24 @@ img {
     font-size: 0.9rem;
     font-weight: 500;
 }
+
+/* --- TOAST NOTIFICATION --- */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--accent-green);
+    color: var(--bg-color);
+    padding: 1rem 1.5rem;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    font-weight: bold;
+}
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}

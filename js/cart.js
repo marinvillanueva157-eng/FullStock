@@ -1,144 +1,113 @@
 document.addEventListener('DOMContentLoaded', () => {
     const cartContainer = document.getElementById('cart-container');
-    const cartActionsContainer = document.getElementById('cart-actions');
-    const allProducts = window.products || [];
-    let cart = window.cartService.get();
-
-    const updateCart = (newCart) => {
-        cart = newCart;
-        localStorage.setItem('fullstock_cart', JSON.stringify(cart));
-        window.cartService.count(); // Para actualizar el header
-        renderCart();
-    };
+    const cartActions = document.getElementById('cart-actions');
+    
+    // Verificar si estamos en la página del carrito
+    if (!cartContainer) return;
 
     const renderCart = () => {
-        if (cart.length === 0) {
+        const cartItems = window.cartService.get();
+        const allProducts = window.products; // Asumiendo que products.js cargó antes
+
+        cartContainer.innerHTML = '';
+        cartActions.innerHTML = '';
+
+        if (cartItems.length === 0) {
             cartContainer.innerHTML = `
                 <div id="cart-empty-message">
-                    <p>Tu carrito está vacío.</p>
-                    <a href="shop.html" class="btn btn-primary">Ir a la tienda</a>
-                </div>`;
-            cartActionsContainer.innerHTML = '';
+                    <h2>Tu carrito está vacío</h2>
+                    <p>¡Mirá nuestro catálogo y encontrá lo que buscás!</p>
+                    <a href="shop.html" class="btn btn-primary">Ir a la Tienda</a>
+                </div>
+            `;
             return;
         }
 
-        let cartHTML = '';
         let total = 0;
 
-        cart.forEach(item => {
+        cartItems.forEach(item => {
             const product = allProducts.find(p => p.id === item.id);
-            if (product) {
-                const subtotal = product.price * item.quantity;
-                total += subtotal;
-                cartHTML += `
-                    <div class="cart-item">
-                        <div class="cart-item-img">
-                            <img src="${product.images[0]}" alt="${product.title}">
-                        </div>
-                        <div class="cart-item-info">
-                            <p class="cart-item-title">${product.title}</p>
-                            <p class="cart-item-price">${window.formatCurrency(product.price)}</p>
-                            <div class="quantity-selector">
-                                <input type="number" class="cart-item-quantity" data-id="${item.id}" value="${item.quantity}" min="1" max="${product.stock}">
-                            </div>
-                        </div>
-                        <p class="cart-item-subtotal">${window.formatCurrency(subtotal)}</p>
-                        <div class="cart-item-actions">
-                             <button class="remove-item-btn" data-id="${item.id}">&times;</button>
-                        </div>
-                    </div>
-                `;
+            if (!product) return;
+
+            const subtotal = product.price * item.quantity;
+            total += subtotal;
+
+            const itemElement = document.createElement('div');
+            itemElement.className = 'cart-item';
+            itemElement.innerHTML = `
+                <div class="cart-item-img">
+                    <img src="${product.images[0]}" alt="${product.title}">
+                </div>
+                <div class="cart-item-info">
+                    <div class="cart-item-title">${product.title}</div>
+                    <div class="cart-item-price">${window.formatCurrency(product.price)}</div>
+                </div>
+                <div class="quantity-selector">
+                    <button class="btn-qty" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                    <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${item.id}, this.value)">
+                    <button class="btn-qty" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                </div>
+                <div class="cart-item-subtotal">
+                    ${window.formatCurrency(subtotal)}
+                </div>
+                <div class="cart-item-actions">
+                    <button onclick="removeItem(${item.id})" title="Eliminar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                    </button>
+                </div>
+            `;
+            cartContainer.appendChild(itemElement);
+        });
+
+        // Acciones y Total
+        cartActions.innerHTML = `
+            <div id="cart-summary">
+                <p>Total: <span id="cart-total">${window.formatCurrency(total)}</span></p>
+                <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button id="btn-clear-cart" class="btn btn-secondary" style="border-color: #ff4d4d; color: #ff4d4d;">Vaciar Carrito</button>
+                    <button id="btn-checkout" class="btn btn-primary">Finalizar Compra por WhatsApp</button>
+                </div>
+            </div>
+        `;
+
+        // Event Listeners
+        document.getElementById('btn-clear-cart').addEventListener('click', () => {
+            if(confirm('¿Estás seguro de que querés vaciar el carrito?')) {
+                window.cartService.clear();
+                renderCart();
             }
         });
-        cartContainer.innerHTML = cartHTML;
-        renderCartActions(total);
-        addEventListeners();
-    };
-    
-    const renderCartActions = (total) => {
-         cartActionsContainer.innerHTML = `
-            <div id="cart-summary">
-                <h3>Total: <span id="cart-total">${window.formatCurrency(total)}</span></h3>
-                <button id="clear-cart-btn" class="btn btn-secondary">Vaciar Carrito</button>
-            </div>
-            <form id="checkout-form">
-                <h2>Finalizar Compra</h2>
-                <div class="form-group">
-                    <label for="name">Nombre y Apellido</label>
-                    <input type="text" id="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="address">Zona / Barrio</label>
-                    <input type="text" id="address" required>
-                </div>
-                <div class="form-group">
-                    <label for="delivery">Forma de Entrega</label>
-                    <select id="delivery" required>
-                        <option value="Retiro">Retirar en punto de entrega</option>
-                        <option value="Envio">Solicitar envío (a coordinar)</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Finalizar por WhatsApp</button>
-            </form>
-        `;
-        addActionsEventListeners(total);
-    }
 
-    const addEventListeners = () => {
-        document.querySelectorAll('.cart-item-quantity').forEach(input => {
-            input.addEventListener('change', e => {
-                const id = parseInt(e.target.dataset.id);
-                const quantity = parseInt(e.target.value);
-                const newCart = cart.map(item => item.id === id ? { ...item, quantity } : item);
-                updateCart(newCart);
-            });
-        });
-
-        document.querySelectorAll('.remove-item-btn').forEach(button => {
-            button.addEventListener('click', e => {
-                const id = parseInt(e.target.dataset.id);
-                const newCart = cart.filter(item => item.id !== id);
-                updateCart(newCart);
-            });
+        document.getElementById('btn-checkout').addEventListener('click', () => {
+             let message = "¡Hola! Quiero realizar el siguiente pedido:\n\n";
+             cartItems.forEach(item => {
+                 const product = allProducts.find(p => p.id === item.id);
+                 if(product) {
+                     message += `- ${product.title} x${item.quantity}: ${window.formatCurrency(product.price * item.quantity)}\n`;
+                 }
+             });
+             message += `\nTotal: ${window.formatCurrency(total)}`;
+             
+             if (typeof sendWhatsAppMessage === 'function') {
+                 sendWhatsAppMessage(message);
+             } else {
+                 alert('Error: whatsapp.js no cargado');
+             }
         });
     };
-    
-    const addActionsEventListeners = (total) => {
-        const clearCartBtn = document.getElementById('clear-cart-btn');
-        if (clearCartBtn) {
-            clearCartBtn.addEventListener('click', () => updateCart([]));
+
+    // Exponer funciones para onclick inline
+    window.updateQuantity = (id, qty) => {
+        window.cartService.update(id, qty);
+        renderCart();
+    };
+
+    window.removeItem = (id) => {
+        if(confirm('¿Eliminar este producto?')) {
+            window.cartService.remove(id);
+            renderCart();
         }
+    };
 
-        const checkoutForm = document.getElementById('checkout-form');
-        if (checkoutForm) {
-            checkoutForm.addEventListener('submit', e => {
-                e.preventDefault();
-                const name = document.getElementById('name').value;
-                const address = document.getElementById('address').value;
-                const delivery = document.getElementById('delivery').value;
-
-                let message = `¡Hola! Quiero finalizar mi pedido en FullStock Shop.\n\n`;
-                message += `*Cliente:* ${name}\n`;
-                message += `*Zona/Barrio:* ${address}\n`;
-                message += `*Entrega:* ${delivery}\n\n`;
-                message += `*Resumen del pedido:*
-`;
-
-                cart.forEach(item => {
-                    const product = allProducts.find(p => p.id === item.id);
-                    if (product) {
-                        message += `- ${product.title} (x${item.quantity})\n`;
-                    }
-                });
-
-                message += `\n*Total:* ${window.formatCurrency(total)}`;
-                
-                sendWhatsAppMessage(message);
-                updateCart([]); // Vaciar carrito después de enviar
-            });
-        }
-    }
-
-    // --- INICIO ---
     renderCart();
 });
