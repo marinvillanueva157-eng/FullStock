@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FullStock Shop - Tienda</title>
+    <meta name="description" content="Explorá nuestro catálogo completo de productos de tecnología.">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header id="main-header"></header>
+
+    <main class="container">
+        <h1 class="page-title">Catálogo de Productos</h1>
+        <div id="shop-controls">
+            <div class="control-group">
+                <input type="search" id="search-input" placeholder="Buscar por nombre o tag...">
+            </div>
+            <div class="control-group">
+                <select id="filter-category">
+                    <option value="all">Todas las categorías</option>
+                </select>
+                <div id="price-filter">
+                    <label for="price-range">Precio:</label>
+                    <input type="range" id="price-range" min="0" max="100000" step="1000">
+                    <span id="price-value"></span>
+                </div>
+            </div>
+            <div class="control-group">
+                <select id="sort-by">
+                    <option value="featured">Destacados</option>
+                    <option value="price-asc">Precio: Menor a Mayor</option>
+                    <option value="price-desc">Precio: Mayor a Menor</option>
+                </select>
+            </div>
+        </div>
+
+        <section id="product-grid" class="grid"></section>
+    </main>
+
+    <footer id="main-footer"></footer>
+
+    <script src="js/products.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/shop.js"></script>
+</body>
+</html>

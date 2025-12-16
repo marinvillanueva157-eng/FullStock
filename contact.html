@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FullStock Shop - Contacto</title>
+    <meta name="description" content="Contactate con nosotros para consultas o soporte.">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header id="main-header"></header>
+
+    <main class="container">
+        <h1 class="page-title">Contacto</h1>
+        <div class="static-content">
+            <h2>¿Tenés alguna duda?</h2>
+            <p>
+                Si tenés preguntas sobre un producto, el estado de tu compra o necesitás soporte,
+                la forma más rápida de contactarnos es a través de WhatsApp.
+            </p>
+            <p>
+                Nuestro equipo está disponible de Lunes a Viernes de 9:00 a 18:00.
+            </p>
+            <button id="contact-whatsapp-btn" class="btn btn-primary">Contactar por WhatsApp</button>
+            
+            <h3>Otras consultas</h3>
+            <p>
+                Para consultas comerciales, colaboraciones o prensa, podés escribirnos a nuestro correo electrónico:
+                <a href="mailto:contacto@fullstock.example.com">contacto@fullstock.example.com</a>
+            </p>
+        </div>
+    </main>
+
+    <footer id="main-footer"></footer>
+
+    <script src="js/app.js"></script>
+    <script src="js/whatsapp.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const contactBtn = document.getElementById('contact-whatsapp-btn');
+            if (contactBtn) {
+                contactBtn.addEventListener('click', () => {
+                    sendWhatsAppMessage('¡Hola! Tengo una consulta sobre FullStock Shop.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
