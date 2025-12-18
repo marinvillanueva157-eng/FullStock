@@ -21,14 +21,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'product-card'; // Clase actualizada para nuevo CSS
 
-            const hasImage = product.images && product.images.length > 0 && product.images[0];
+            const imageSrc = product.images && product.images.length > 0 ? product.images[0] : null;
+            // Validar que exista imagen y NO sea un placeholder local (evita 404)
+            const hasImage = imageSrc && !imageSrc.includes('assets/products/placeholder');
             
             // Placeholder PRO
             const mediaHTML = hasImage
-                ? `<img src="${product.images[0]}" alt="${product.title}" class="product-img">`
+                ? `<img src="${imageSrc}" alt="${product.title}" class="product-img">`
                 : `<div class="product-placeholder">
                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                       <span style="margin-top: 8px; font-size: 0.9rem;">Imagen no disponible</span>
+                       <span class="placeholder-text">Imagen no disponible</span>
                    </div>`;
 
             const stockBadge = product.stock === 0 
