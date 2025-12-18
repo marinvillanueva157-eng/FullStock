@@ -36,10 +36,11 @@ form.addEventListener('submit', async (e) => {
             category,
             featured,
             image: downloadURL,
+            images: [downloadURL],
             createdAt: serverTimestamp()
         });
 
-        console.log("✅ Producto creado en Firestore");
+        console.log("✅ Guardado en Firestore con image e images");
         alert("Producto creado exitosamente");
         form.reset();
     } catch (error) {
