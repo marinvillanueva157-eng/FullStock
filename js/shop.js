@@ -1,4 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
+import { loadProducts } from "./productsService.js";
+
+document.addEventListener('DOMContentLoaded', async () => {
     // --- ELEMENTOS DEL DOM ---
     const grid = document.getElementById('product-grid');
     const searchInput = document.getElementById('search-input');
@@ -7,7 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const priceValue = document.getElementById('price-value');
     const sortBy = document.getElementById('sort-by');
 
-    let allProducts = window.products || [];
+    let allProducts = await loadProducts();
+
+    console.log("🛒 shop.js inicializado");
+    console.log("🧩 Productos cargados:", allProducts.length);
     
     // --- RENDERIZADO DE PRODUCTOS ---
     const renderGrid = (productsToRender) => {
