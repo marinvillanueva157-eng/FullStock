@@ -6,36 +6,71 @@
     <title>FullStock Shop - Tienda</title>
     <meta name="description" content="Explorá nuestro catálogo completo de productos de tecnología.">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/shop.css">
 </head>
 <body>
     <header id="main-header"></header>
 
-    <main class="container">
-        <h1 class="page-title">Catálogo de Productos</h1>
-        <div id="shop-controls">
-            <div class="control-group">
-                <input type="search" id="search-input" placeholder="Buscar por nombre o tag...">
+    <main class="shop-page">
+        <!-- 1. HERO GRANDE -->
+        <section class="shop-hero">
+            <div class="shop-container">
+                <h1>Tecnología Premium</h1>
+                <p>Encontrá los mejores componentes y accesorios para llevar tu setup al siguiente nivel.</p>
             </div>
-            <div class="control-group">
-                <select id="filter-category">
-                    <option value="all">Todas las categorías</option>
-                </select>
-                <div id="price-filter">
-                    <label for="price-range">Precio:</label>
-                    <input type="range" id="price-range" min="0" max="100000" step="1000">
-                    <span id="price-value"></span>
+        </section>
+
+        <div class="shop-container">
+            <!-- 2. CATEGORÍAS DESTACADAS -->
+            <section class="category-strip">
+                <a href="#" class="cat-card"><h3>Cables</h3></a>
+                <a href="#" class="cat-card"><h3>Cargadores</h3></a>
+                <a href="#" class="cat-card"><h3>Audio</h3></a>
+                <a href="#" class="cat-card"><h3>Accesorios</h3></a>
+            </section>
+
+            <!-- 3. BENEFICIOS -->
+            <section class="shop-benefits">
+                <div class="benefit-item">
+                    <h4>🚚 Envío Rápido</h4>
+                    <p>A todo el país</p>
+                </div>
+                <div class="benefit-item">
+                    <h4>🔒 Pago Seguro</h4>
+                    <p>Transacción protegida</p>
+                </div>
+                <div class="benefit-item">
+                    <h4>💬 Soporte 24/7</h4>
+                    <p>Atención experta</p>
+                </div>
+            </section>
+
+            <!-- 4. CONTROLES Y GRILLA -->
+            <div id="shop-controls">
+                <div class="control-group">
+                    <input type="search" id="search-input" placeholder="🔍 Buscar producto...">
+                </div>
+                <div class="control-group">
+                    <select id="filter-category">
+                        <option value="all">Todas las categorías</option>
+                    </select>
+                    <select id="sort-by">
+                        <option value="featured">✨ Destacados</option>
+                        <option value="price-asc">💲 Precio: Menor a Mayor</option>
+                        <option value="price-desc">💲 Precio: Mayor a Menor</option>
+                    </select>
+                </div>
+                <div class="control-group" style="flex-grow: 1; justify-content: flex-end;">
+                    <div id="price-filter" style="display: flex; align-items: center; gap: 10px; color: #fff;">
+                        <label for="price-range">Max Precio:</label>
+                        <input type="range" id="price-range" min="0" max="100000" step="1000">
+                        <span id="price-value" style="font-weight: bold; color: var(--accent);"></span>
+                    </div>
                 </div>
             </div>
-            <div class="control-group">
-                <select id="sort-by">
-                    <option value="featured">Destacados</option>
-                    <option value="price-asc">Precio: Menor a Mayor</option>
-                    <option value="price-desc">Precio: Mayor a Menor</option>
-                </select>
-            </div>
-        </div>
 
-        <section id="product-grid" class="grid"></section>
+            <section id="product-grid"></section>
+        </div>
     </main>
 
     <footer id="main-footer"></footer>

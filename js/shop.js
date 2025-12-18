@@ -13,38 +13,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderGrid = (productsToRender) => {
         grid.innerHTML = '';
         if (productsToRender.length === 0) {
-            grid.innerHTML = '<p class="col-span-full text-center">No se encontraron productos con estos filtros.</p>';
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; font-size: 1.2rem; padding: 40px;">No se encontraron productos con estos filtros.</p>';
             return;
         }
 
         productsToRender.forEach(product => {
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = 'product-card'; // Clase actualizada para nuevo CSS
 
             const hasImage = product.images && product.images.length > 0 && product.images[0];
-            const imageElement = hasImage
-                ? `<img src="${product.images[0]}" alt="${product.title}" class="card-image">`
-                : `<div class="product-image-placeholder">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M21 21H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3m3-3h6l2 3h4a2 2 0 0 1 2 2v9.34m-7.72-2.06a4 4 0 1 1-5.56-5.56"></path></svg>
-                       <p>Imagen no disponible</p>
+            
+            // Placeholder PRO
+            const mediaHTML = hasImage
+                ? `<img src="${product.images[0]}" alt="${product.title}" class="product-img">`
+                : `<div class="product-placeholder">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                       <span style="margin-top: 8px; font-size: 0.9rem;">Imagen no disponible</span>
                    </div>`;
 
+            const stockBadge = product.stock === 0 
+                ? '<span class="badge badge-nostock">Sin Stock</span>' 
+                : (product.featured ? '<span class="badge badge-featured">Destacado</span>' : '');
+
             card.innerHTML = `
-                <a href="product.html?id=${product.id}" class="card-link">
-                    <div class="card-image-container">
-                        ${imageElement}
-                        <div class="card-badges">
-                            ${product.featured ? '<span class="badge badge-featured">Destacado</span>' : ''}
-                            ${product.stock > 0 ? `<span class="badge badge-stock">En Stock (${product.stock})</span>` : '<span class="badge badge-no-stock">Sin Stock</span>'}
-                        </div>
+                <div class="product-media-container">
+                    ${mediaHTML}
+                    <div class="product-badges">
+                        ${stockBadge}
                     </div>
-                    <div class="card-content">
-                        <p class="card-category">${product.category}</p>
-                        <h3 class="card-title">${product.title}</h3>
-                        <p class="card-price">${window.formatCurrency(product.price)}</p>
-                    </div>
-                </a>
-                <div class="card-actions">
+                </div>
+                
+                <div class="product-content">
+                    <h3 class="product-title" title="${product.title}">${product.title}</h3>
+                    <p class="product-price">${window.formatCurrency(product.price)}</p>
+                    
                     <button class="btn btn-primary add-to-cart-btn" data-product-id="${product.id}" ${product.stock === 0 ? 'disabled' : ''}>
                         ${product.stock > 0 ? 'Agregar al Carrito' : 'Sin Stock'}
                     </button>
