@@ -1,0 +1,35 @@
+[
+  {
+    "id": "a",
+    "title": "a",
+    "category": "General",
+    "price": 0,
+    "featured": false,
+    "stock": 0,
+    "images": [
+      "assets/products/a/1.webp"
+    ]
+  },
+  {
+    "id": "camitabanana",
+    "title": "camitabanana",
+    "category": "General",
+    "price": 0,
+    "featured": false,
+    "stock": 0,
+    "images": [
+      "assets/products/camitabanana/1.webp"
+    ]
+  },
+  {
+    "id": "reloj",
+    "title": "reloj",
+    "category": "General",
+    "price": 0,
+    "featured": false,
+    "stock": 0,
+    "images": [
+      "assets/products/reloj/1.webp"
+    ]
+  }
+]

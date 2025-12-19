@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const priceValue = document.getElementById('price-value');
     const sortBy = document.getElementById('sort-by');
 
-    let allProducts = window.products || [];
+    let allProducts = [];
     
     // --- RENDERIZADO DE PRODUCTOS ---
     const renderGrid = (productsToRender) => {
@@ -134,10 +134,61 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- INICIO ---
-    if (allProducts.length > 0) {
-        initControls();
-        applyFiltersAndSort();
-    } else {
-        grid.innerHTML = '<p>No se pudieron cargar los productos.</p>';
-    }
+const loadProducts = () => {
+    fetch('data/products.generated.json', { cache: "no-store" })
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            // Soporte para array directo o objeto { products: [...] }
+            const rawData = Array.isArray(data) ? data : (data.products || []);
+            
+            // Normalización de datos
+            allProducts = rawData.map((p, index) => ({
+                ...p,
+                id: index + 1, // ID numérico secuencial
+                price: Number(p.price) || 0,
+                stock: Number(p.stock) || 0,
+                tags: Array.isArray(p.tags) ? p.tags : [],
+                images: Array.isArray(p.images) ? p.images : [],
+                description: String(p.description || ''),
+                category: String(p.category || 'General')
+            }));
+
+            window.products = allProducts; // Mantener contrato global
+
+            if (allProducts.length > 0) {
+                initControls();
+                applyFiltersAndSort();
+            } else {
+                grid.innerHTML = '<p class="col-span-full text-center">No se encontraron productos en el catálogo.</p>';
+            }
+        })
+        .catch(error => {
+            console.error("Error cargando productos:", error);
+            grid.innerHTML = '<p class="col-span-full text-center">Error al cargar los productos. Por favor intente más tarde.</p>';
+        });
+};
+
+loadProducts();
+
+                }));
+
+                window.products = allProducts; // Mantener contrato global
+
+                if (allProducts.length > 0) {
+                    initControls();
+                    applyFiltersAndSort();
+                } else {
+                    grid.innerHTML = '<p class="col-span-full text-center">No se encontraron productos en el catálogo.</p>';
+                }
+            })
+            .catch(error => {
+                console.error("Error cargando productos:", error);
+                grid.innerHTML = '<p class="col-span-full text-center">Error al cargar los productos. Por favor intente más tarde.</p>';
+            });
+    };
+
+    loadProducts();
 });
