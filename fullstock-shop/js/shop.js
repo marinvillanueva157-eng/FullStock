@@ -172,23 +172,4 @@ const loadProducts = () => {
 };
 
 loadProducts();
-
-                }));
-
-                window.products = allProducts; // Mantener contrato global
-
-                if (allProducts.length > 0) {
-                    initControls();
-                    applyFiltersAndSort();
-                } else {
-                    grid.innerHTML = '<p class="col-span-full text-center">No se encontraron productos en el catálogo.</p>';
-                }
-            })
-            .catch(error => {
-                console.error("Error cargando productos:", error);
-                grid.innerHTML = '<p class="col-span-full text-center">Error al cargar los productos. Por favor intente más tarde.</p>';
-            });
-    };
-
-    loadProducts();
 });
