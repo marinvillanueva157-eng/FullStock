@@ -2,13 +2,13 @@
   "a": {
     "price": 10000,
     "stock": 10000,
-    "title": "A16 Usado",
+    "title": "A16",
     "category": "Celulares"
   },
   "camitabanana": {
     "price": 10000,
     "stock": 210000,
-    "title": "Cama de mascotas suber epica",
+    "title": "Cama de mascotas",
     "category": "Domestico"
   },
   "reloj": {
@@ -20,7 +20,7 @@
   "joystyk": {
     "price": 10000,
     "stock": 10000,
-    "title": "te amo chatgpt",
+    "title": "control celu",
     "category": "Tegnologia"
   },
   "encendedor-magico": {

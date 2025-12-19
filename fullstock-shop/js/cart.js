@@ -1,143 +1,212 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const cartContainer = document.getElementById('cart-container');
-    const cartActionsContainer = document.getElementById('cart-actions');
-    const allProducts = window.products || [];
-    let cart = window.cartService.get();
+document.addEventListener('DOMContentLoaded', async () => {
+  const cartContainer = document.getElementById('cart-container');
+  const cartActionsContainer = document.getElementById('cart-actions');
 
-    const updateCart = (newCart) => {
-        cart = newCart;
-        localStorage.setItem('fullstock_cart', JSON.stringify(cart));
-        window.cartService.count(); // Para actualizar el header
-        renderCart();
-    };
+  // Seguridad: si este script se carga por error en otra página, no rompe nada
+  if (!cartContainer || !cartActionsContainer) return;
 
-    const renderCart = () => {
-        if (cart.length === 0) {
-            cartContainer.innerHTML = `
-                <div id="cart-empty-message">
-                    <p>Tu carrito está vacío.</p>
-                    <a href="shop.html" class="btn btn-primary">Ir a la tienda</a>
-                </div>`;
-            cartActionsContainer.innerHTML = '';
-            return;
-        }
+  const fmt = (n) => window.formatCurrency ? window.formatCurrency(n) : `$ ${Number(n||0).toLocaleString('es-AR')}`;
 
-        let cartHTML = '';
-        let total = 0;
+  async function loadProductsIndex() {
+    let products = [];
+    let overrides = {};
 
-        cart.forEach(item => {
-            const product = allProducts.find(p => p.id === item.id);
-            if (product) {
-                const subtotal = product.price * item.quantity;
-                total += subtotal;
-                cartHTML += `
-                    <div class="cart-item">
-                        <div class="cart-item-img">
-                            <img src="${product.images[0]}" alt="${product.title}">
-                        </div>
-                        <div class="cart-item-info">
-                            <p class="cart-item-title">${product.title}</p>
-                            <p class="cart-item-price">${window.formatCurrency(product.price)}</p>
-                            <div class="quantity-selector">
-                                <input type="number" class="cart-item-quantity" data-id="${item.id}" value="${item.quantity}" min="1" max="${product.stock}">
-                            </div>
-                        </div>
-                        <p class="cart-item-subtotal">${window.formatCurrency(subtotal)}</p>
-                        <div class="cart-item-actions">
-                             <button class="remove-item-btn" data-id="${item.id}">&times;</button>
-                        </div>
-                    </div>
-                `;
-            }
-        });
-        cartContainer.innerHTML = cartHTML;
-        renderCartActions(total);
-        addEventListeners();
-    };
-    
-    const renderCartActions = (total) => {
-         cartActionsContainer.innerHTML = `
-            <div id="cart-summary">
-                <h3>Total: <span id="cart-total">${window.formatCurrency(total)}</span></h3>
-                <button id="clear-cart-btn" class="btn btn-secondary">Vaciar Carrito</button>
+    try {
+      const r = await fetch('data/products.generated.json', { cache: 'no-store' });
+      products = r.ok ? await r.json() : [];
+    } catch (e) {
+      console.error('No se pudo cargar products.generated.json', e);
+      products = [];
+    }
+
+    try {
+      const r = await fetch('data/product.overrides.json', { cache: 'no-store' });
+      overrides = r.ok ? await r.json() : {};
+    } catch {
+      overrides = {};
+    }
+
+    const index = {};
+    (products || []).forEach(p => {
+      const key = p?.id || p?.slug;
+      if (!key) return;
+      const ov = (overrides && overrides[key]) ? overrides[key] : {};
+      const merged = { ...p, ...ov };
+      merged.price = Number(merged.price) || 0;
+      merged.stock = Number(merged.stock) || 0;
+      index[key] = merged;
+    });
+
+    console.log('Carrito: productos indexados =', Object.keys(index).length);
+    return index;
+  }
+
+  function getCart() {
+    const service = window.cartService;
+    let cart = [];
+    try {
+      cart = service?.get ? service.get() : (JSON.parse(localStorage.getItem('fullstock_cart')) || []);
+    } catch {
+      cart = [];
+    }
+    if (!Array.isArray(cart)) cart = [];
+    // Normalizar
+    cart = cart.map(it => ({
+      id: String(it.id ?? it.productId ?? '').trim(),
+      quantity: Number(it.quantity ?? it.qty ?? 1) || 1
+    })).filter(it => it.id);
+    console.log('Carrito: items =', cart.length, cart);
+    return cart;
+  }
+
+  function setCart(newCart) {
+    if (window.cartService?.set) window.cartService.set(newCart);
+    else localStorage.setItem('fullstock_cart', JSON.stringify(newCart));
+    if (window.cartService?.count) window.cartService.count(); // actualiza header
+  }
+
+  function renderEmpty() {
+    cartContainer.innerHTML = `
+      <div id="cart-empty-message">
+        <p>Tu carrito está vacío.</p>
+        <a href="shop.html" class="btn btn-primary">Ir a la tienda</a>
+      </div>`;
+    cartActionsContainer.innerHTML = '';
+  }
+
+  function render(cart, productIndex) {
+    if (!cart.length) {
+      renderEmpty();
+      return;
+    }
+
+    let total = 0;
+    let html = '';
+
+    cart.forEach(item => {
+      const p = productIndex[item.id];
+      if (!p) {
+        console.warn('Producto no encontrado:', item.id);
+        html += `
+          <div class="cart-item">
+            <div class="cart-item-info">
+              <p class="cart-item-title">Producto no encontrado (ID: ${item.id})</p>
+              <p class="cart-item-price">Unitario: ${fmt(0)}</p>
             </div>
-            <form id="checkout-form">
-                <h2>Finalizar Compra</h2>
-                <div class="form-group">
-                    <label for="name">Nombre y Apellido</label>
-                    <input type="text" id="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="address">Zona / Barrio</label>
-                    <input type="text" id="address" required>
-                </div>
-                <div class="form-group">
-                    <label for="delivery">Forma de Entrega</label>
-                    <select id="delivery" required>
-                        <option value="Retiro">Retirar en punto de entrega</option>
-                        <option value="Envio">Solicitar envío (a coordinar)</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Finalizar por WhatsApp</button>
-            </form>
-        `;
-        addActionsEventListeners(total);
-    }
+            <p class="cart-item-subtotal">Subtotal: ${fmt(0)}</p>
+            <div class="cart-item-actions">
+              <button class="remove-item-btn" data-id="${item.id}">&times;</button>
+            </div>
+          </div>`;
+        return;
+      }
 
-    const addEventListeners = () => {
-        document.querySelectorAll('.cart-item-quantity').forEach(input => {
-            input.addEventListener('change', e => {
-                const id = parseInt(e.target.dataset.id);
-                const quantity = parseInt(e.target.value);
-                const newCart = cart.map(item => item.id === id ? { ...item, quantity } : item);
-                updateCart(newCart);
-            });
-        });
+      const unit = Number(p.price) || 0;
+      const qty = Math.max(1, Number(item.quantity) || 1);
+      const subtotal = unit * qty;
+      total += subtotal;
 
-        document.querySelectorAll('.remove-item-btn').forEach(button => {
-            button.addEventListener('click', e => {
-                const id = parseInt(e.target.dataset.id);
-                const newCart = cart.filter(item => item.id !== id);
-                updateCart(newCart);
-            });
-        });
-    };
-    
-    const addActionsEventListeners = (total) => {
-        const clearCartBtn = document.getElementById('clear-cart-btn');
-        if (clearCartBtn) {
-            clearCartBtn.addEventListener('click', () => updateCart([]));
+      // SIN imágenes
+      html += `
+        <div class="cart-item">
+          <div class="cart-item-info">
+            <p class="cart-item-title">${p.title}</p>
+            <p class="cart-item-price">Unitario: ${fmt(unit)}</p>
+            <div class="quantity-selector">
+              <input type="number" class="cart-item-quantity"
+                     data-id="${item.id}" value="${qty}" min="1"
+                     ${p.stock > 0 ? `max="${p.stock}"` : ''}>
+            </div>
+          </div>
+          <p class="cart-item-subtotal">Subtotal: ${fmt(subtotal)}</p>
+          <div class="cart-item-actions">
+            <button class="remove-item-btn" data-id="${item.id}">&times;</button>
+          </div>
+        </div>`;
+    });
+
+    cartContainer.innerHTML = html;
+
+    cartActionsContainer.innerHTML = `
+      <div id="cart-summary">
+        <h3>Total: <span id="cart-total">${fmt(total)}</span></h3>
+        <button id="clear-cart-btn" class="btn btn-secondary">Vaciar Carrito</button>
+      </div>
+      <form id="checkout-form">
+        <h2>Finalizar Compra</h2>
+        <div class="form-group">
+          <label for="name">Nombre y Apellido</label>
+          <input type="text" id="name" required>
+        </div>
+        <div class="form-group">
+          <label for="address">Zona / Barrio</label>
+          <input type="text" id="address" required>
+        </div>
+        <div class="form-group">
+          <label for="delivery">Forma de Entrega</label>
+          <select id="delivery" required>
+            <option value="Retiro">Retirar en punto de entrega</option>
+            <option value="Envio">Solicitar envío (a coordinar)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Finalizar por WhatsApp</button>
+      </form>
+    `;
+
+    // Events
+    document.querySelectorAll('.cart-item-quantity').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const id = String(e.target.dataset.id);
+        const quantity = Number(e.target.value) || 1;
+        const next = cart.map(it => it.id === id ? { ...it, quantity } : it);
+        setCart(next);
+        render(next, productIndex);
+      });
+    });
+
+    document.querySelectorAll('.remove-item-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = String(e.currentTarget.dataset.id);
+        const next = cart.filter(it => it.id !== id);
+        setCart(next);
+        render(next, productIndex);
+      });
+    });
+
+    document.getElementById('clear-cart-btn')?.addEventListener('click', () => {
+      setCart([]);
+      renderEmpty();
+    });
+
+    document.getElementById('checkout-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const address = document.getElementById('address').value;
+      const delivery = document.getElementById('delivery').value;
+
+      let message = `¡Hola! Quiero finalizar mi pedido en FullStock Shop.\n\n`;
+      message += `*Cliente:* ${name}\n`;
+      message += `*Zona/Barrio:* ${address}\n`;
+      message += `*Entrega:* ${delivery}\n\n`;
+      message += `*Resumen del pedido:*\n`;
+
+      cart.forEach(it => {
+        const p = productIndex[it.id];
+        if (p) {
+          const st = (Number(p.price)||0) * (Number(it.quantity)||1);
+          message += `- ${p.title} (x${it.quantity}) — ${fmt(st)}\n`;
         }
+      });
 
-        const checkoutForm = document.getElementById('checkout-form');
-        if (checkoutForm) {
-            checkoutForm.addEventListener('submit', e => {
-                e.preventDefault();
-                const name = document.getElementById('name').value;
-                const address = document.getElementById('address').value;
-                const delivery = document.getElementById('delivery').value;
+      message += `\n*Total:* ${fmt(total)}`;
 
-                let message = `¡Hola! Quiero finalizar mi pedido en FullStock Shop.\n\n`;
-                message += `*Cliente:* ${name}\n`;
-                message += `*Zona/Barrio:* ${address}\n`;
-                message += `*Entrega:* ${delivery}\n\n`;
-                message += `*Resumen del pedido:*\n`;
+      if (typeof sendWhatsAppMessage === 'function') sendWhatsAppMessage(message);
+      setCart([]);
+      renderEmpty();
+    });
+  }
 
-                cart.forEach(item => {
-                    const product = allProducts.find(p => p.id === item.id);
-                    if (product) {
-                        message += `- ${product.title} (x${item.quantity})\n`;
-                    }
-                });
-
-                message += `\n*Total:* ${window.formatCurrency(total)}`;
-                
-                sendWhatsAppMessage(message);
-                updateCart([]); // Vaciar carrito después de enviar
-            });
-        }
-    }
-
-    // --- INICIO ---
-    renderCart();
+  const productIndex = await loadProductsIndex();
+  const cart = getCart();
+  render(cart, productIndex);
 });
