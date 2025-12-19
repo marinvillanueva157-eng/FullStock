@@ -25,5 +25,7 @@
   },
   "encendedor-magico": {
     "category": "domestico"
+    "hidden": true
+    
   }
 }
