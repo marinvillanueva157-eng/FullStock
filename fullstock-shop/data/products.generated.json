@@ -31,5 +31,16 @@
     "images": [
       "assets/products/reloj/1.webp"
     ]
+  },
+  {
+    "id": "joystyk",
+    "title": "joystyk",
+    "category": "General",
+    "price": 0,
+    "featured": false,
+    "stock": 0,
+    "images": [
+      "assets/products/joystyk/1.webp"
+    ]
   }
 ]
