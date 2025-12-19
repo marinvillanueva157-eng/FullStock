@@ -1,0 +1,26 @@
+{
+  "a": {
+    "price": 10000,
+    "stock": 10000,
+    "title": "A16 Usado",
+    "category": "Celulares"
+  },
+  "camitabanana": {
+    "price": 10000,
+    "stock": 210000,
+    "title": "Cama de mascotas suber epica",
+    "category": "Domestico"
+  },
+  "reloj": {
+    "price": 10000,
+    "stock": 10000,
+    "title": "smartwatch",
+    "category": "Tegnologia"
+  },
+  "joystyk": {
+    "price": 10000,
+    "stock": 10000,
+    "title": "te amo chatgpt",
+    "category": "Tegnologia"
+  }
+}

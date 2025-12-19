@@ -1,0 +1,18 @@
+{
+  "a": {
+    "price": 4000,
+    "stock": 9000
+  },
+  "camitabanana": {
+    "price": 15000,
+    "stock": 9000
+  },
+  "reloj": {
+    "price": 90000,
+    "stock": 9000
+  },
+  "joystyk": {
+    "price": 90000,
+    "stock": 90000
+  }
+}
