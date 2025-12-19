@@ -42,5 +42,18 @@
     "images": [
       "assets/products/joystyk/1.webp"
     ]
+  },
+  {
+    "id": "encendedor-magico",
+    "title": "Encendedor-magico",
+    "description": "",
+    "category": "General",
+    "price": 0,
+    "featured": false,
+    "stock": 0,
+    "tags": [],
+    "images": [
+      "assets/products/encendedor-magico/1.webp"
+    ]
   }
 ]
