@@ -44,8 +44,8 @@
     ]
   },
   {
-    "id": "encendedor-magico",
-    "title": "Encendedor-magico",
+    "id": "casco",
+    "title": "Casco",
     "description": "",
     "category": "General",
     "price": 0,
@@ -53,7 +53,7 @@
     "stock": 0,
     "tags": [],
     "images": [
-      "assets/products/encendedor-magico/1.webp"
+      
     ]
   }
 ]
