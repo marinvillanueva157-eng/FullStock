@@ -21,27 +21,31 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'card';
 
-            const hasImage = product.images && product.images.length > 0 && product.images[0];
-            const imageElement = hasImage
-                ? `<img src="${product.images[0]}" alt="${product.title}" class="card-image">`
-                : `<div class="product-image-placeholder">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M21 21H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3m3-3h6l2 3h4a2 2 0 0 1 2 2v9.34m-7.72-2.06a4 4 0 1 1-5.56-5.56"></path></svg>
-                       <p>Imagen no disponible</p>
-                   </div>`;
+            const hasImage = product.images && product.images.length > 0;
+
+           const imageElement = hasImage
+  ? `<img src="${product.images[0]}" alt="${product.title}" class="card-image">`
+  : `<div class="product-image-placeholder">Sin imagen</div>`;
+
+
+            const badgeElement =
+                product.stock === 0
+                    ? `<span class="badge badge-no-stock">Sin stock</span>`
+                    : '';
+
+            const stockText = product.stock > 0 ? `Stock: ${product.stock}` : 'Sin stock';
 
             card.innerHTML = `
                 <a href="product.html?id=${product.id}" class="card-link">
                     <div class="card-image-container">
                         ${imageElement}
-                        <div class="card-badges">
-                            ${product.featured ? '<span class="badge badge-featured">Destacado</span>' : ''}
-                            ${product.stock > 0 ? `<span class="badge badge-stock">En Stock (${product.stock})</span>` : '<span class="badge badge-no-stock">Sin Stock</span>'}
-                        </div>
                     </div>
+                    ${badgeElement}
                     <div class="card-content">
                         <p class="card-category">${product.category}</p>
                         <h3 class="card-title">${product.title}</h3>
                         <p class="card-price">${window.formatCurrency(product.price)}</p>
+                        <p class="card-stock">${stockText}</p>
                     </div>
                 </a>
                 <div class="card-actions">
