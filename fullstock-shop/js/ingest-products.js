@@ -79,13 +79,20 @@ let productsData = [];
 if (fs.existsSync(jsonPath)) {
     try {
         productsData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        // Asegurar que sea un array (compatibilidad)
+        if (!Array.isArray(productsData) && productsData.products) {
+            productsData = productsData.products;
+        }
     } catch (e) {
         console.error("⚠️ Error leyendo JSON existente, se creará uno nuevo.");
+        productsData = [];
     }
 }
 
 let movedCount = 0;
 let productsDetected = 0;
+let newProductsCount = 0;
+let mergedProductsCount = 0;
 
 Object.keys(groups).forEach(slug => {
     productsDetected++;
@@ -119,21 +126,30 @@ Object.keys(groups).forEach(slug => {
     });
 
     // Actualizar o Crear en JSON
+    // --- MERGE LOGIC ---
+    // Buscar si ya existe por ID (slug)
     let product = productsData.find(p => p.id === slug);
+
     if (product) {
-        product.images = [...(product.images || []), ...newImagesPaths];
-        // Eliminar duplicados si los hubiera
-        product.images = [...new Set(product.images)];
+        // A) EXISTE: MERGE (Preservar datos, actualizar imágenes)
+        console.log(`🔄 Merge: Actualizando imágenes para "${group.title}" (ID: ${slug})`);
+        product.images = newImagesPaths;
+        mergedProductsCount++;
     } else {
+        // B) NO EXISTE: CREAR (Defaults)
+        console.log(`✨ Nuevo: Creando producto "${group.title}"`);
         productsData.push({
             id: slug,
             title: group.title,
+            description: "",
             category: "General",
             price: 0,
             featured: false,
             stock: 0,
+            tags: [],
             images: newImagesPaths
         });
+        newProductsCount++;
     }
 });
 
@@ -143,5 +159,8 @@ fs.writeFileSync(jsonPath, JSON.stringify(productsData, null, 2), 'utf8');
 console.log("------------------------------------------------");
 console.log(`✅ Proceso finalizado.`);
 console.log(`📦 Productos procesados: ${productsDetected}`);
+console.log(`📊 Productos Totales en JSON: ${productsData.length}`);
+console.log(`✨ Nuevos agregados: ${newProductsCount}`);
+console.log(`🔄 Actualizados (Merge): ${mergedProductsCount}`);
 console.log(`🖼️  Imágenes movidas: ${movedCount}`);
 console.log(`📄 JSON guardado en: ${jsonPath}`);
