@@ -24,8 +24,9 @@
     "category": "Tegnologia"
   },
   "encendedor-magico": {
-    "category": "domestico"
+    "category": "domestico",
     "hidden": true
+
     
   }
 }
