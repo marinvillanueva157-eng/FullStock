@@ -4,7 +4,7 @@
  * Tu número local: 3764725830  => wa.me: 5493764725830
  */
 
-const WHATSAPP_PHONE = "5493764725830";
+const WHATSAPP_PHONE = "+54 9 3764725830";
 
 /**
  * Abre WhatsApp con el mensaje indicado.
@@ -18,7 +18,7 @@ function sendWhatsAppMessage(message) {
   }
 
   const text = encodeURIComponent(String(message || ""));
-  const url = `https://wa.me/${phone}?text=${text}`;
+  const url = `https://api.whatsapp.com/send?phone=${phone}&text=${text}`;
 
   window.open(url, "_blank", "noopener");
 }
