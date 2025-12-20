@@ -101,7 +101,7 @@ const server = http.createServer((req, res) => {
   return serveStatic(req, res);
 });
 
-const PORT = 5179;
+const PORT = 5199;
 server.listen(PORT, () => {
   console.log(`✅ Admin server corriendo en http://127.0.0.1:${PORT}/admin.html`);
 });
