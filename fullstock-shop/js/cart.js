@@ -106,7 +106,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       const subtotal = unit * qty;
       total += subtotal;
 
-      // SIN imágenes
       html += `
         <div class="cart-item">
           <div class="cart-item-info">
@@ -132,16 +131,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         <h3>Total: <span id="cart-total">${fmt(total)}</span></h3>
         <button id="clear-cart-btn" class="btn btn-secondary">Vaciar Carrito</button>
       </div>
+
       <form id="checkout-form">
         <h2>Finalizar Compra</h2>
+
         <div class="form-group">
           <label for="name">Nombre y Apellido</label>
           <input type="text" id="name" required>
         </div>
+
         <div class="form-group">
           <label for="address">Zona / Barrio</label>
           <input type="text" id="address" required>
+
+          <label for="addressInput">Ubicación / Dirección (autocompletado)</label>
+          <input id="addressInput" type="text"
+                 placeholder="Escribí tu barrio, calle y ciudad..."
+                 autocomplete="off" />
+          <div id="addressSuggestions" class="suggestions"></div>
+
+          <input id="addressChosen" type="hidden" />
+          <input id="addressLat" type="hidden" />
+          <input id="addressLon" type="hidden" />
         </div>
+
         <div class="form-group">
           <label for="delivery">Forma de Entrega</label>
           <select id="delivery" required>
@@ -149,9 +162,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             <option value="Envio">Solicitar envío (a coordinar)</option>
           </select>
         </div>
+
         <button type="submit" class="btn btn-primary">Finalizar por WhatsApp</button>
       </form>
     `;
+
+    // Inicializar el autocompletado ahora que el input existe en el DOM
+    if (window.initLocationAutocomplete) window.initLocationAutocomplete();
 
     // Events
     document.querySelectorAll('.cart-item-quantity').forEach(input => {
@@ -180,15 +197,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('checkout-form')?.addEventListener('submit', (e) => {
       e.preventDefault();
-      const name = document.getElementById('name').value;
-      const address = document.getElementById('address').value;
+
+      const name = document.getElementById('name').value.trim();
+      const address = document.getElementById('address').value.trim();
       const delivery = document.getElementById('delivery').value;
 
+      const addressText =
+        document.getElementById('addressChosen')?.value?.trim() ||
+        document.getElementById('addressInput')?.value?.trim() ||
+        "";
+
+      const lat = document.getElementById('addressLat')?.value || "";
+      const lon = document.getElementById('addressLon')?.value || "";
+
       let message = `¡Hola! Quiero finalizar mi pedido en FullStock Shop.\n\n`;
-      message += `*Cliente:* ${name}\n`;
-      message += `*Zona/Barrio:* ${address}\n`;
-      message += `*Entrega:* ${delivery}\n\n`;
-      message += `*Resumen del pedido:*\n`;
+      message += `Cliente: ${name}\n`;
+      message += `Zona/Barrio: ${address}\n`;
+      if (addressText) message += `Ubicación: ${addressText}\n`;
+      message += `Entrega: ${delivery}\n`;
+
+      if (lat && lon) {
+        message += `Mapa: https://www.google.com/maps?q=${lat},${lon}\n`;
+      }
+
+      message += `\nResumen del pedido:\n`;
 
       cart.forEach(it => {
         const p = productIndex[it.id];
@@ -198,9 +230,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       });
 
-      message += `\n*Total:* ${fmt(total)}`;
+      message += `\nTotal: ${fmt(total)}`;
 
-      if (typeof sendWhatsAppMessage === 'function') sendWhatsAppMessage(message);
+      if (typeof window.sendWhatsAppMessage === 'function') {
+        window.sendWhatsAppMessage(message);
+      } else {
+        alert("Error: no se encontró sendWhatsAppMessage. Revisá carga de whatsapp.js");
+        return;
+      }
+
       setCart([]);
       renderEmpty();
     });
