@@ -1,15 +1,12 @@
 /**
- * Crea y abre un enlace de WhatsApp 'wa.me' con un mensaje predefinido.
- * @param {string} message - El mensaje a enviar.
+ * Abre WhatsApp usando wa.me con un mensaje predefinido.
  */
-function sendWhatsAppMessage(message) {
-    if (typeof WHATSAPP_PHONE === "undefined") {
-        console.error("WHATSAPP_PHONE no está definido");
-        return;
-    }
 
-    // Limpia el número: deja SOLO dígitos
-    const phone = String(5493764725830).replace(/\D/g, "");
+// CONFIGURACIÓN
+const WHATSAPP_PHONE = "5493764725830"; // 54 (AR) + 9 + TU número
+
+function sendWhatsAppMessage(message) {
+    const phone = String(WHATSAPP_PHONE).replace(/\D/g, "");
 
     if (!phone) {
         console.error("Número de WhatsApp inválido:", WHATSAPP_PHONE);
