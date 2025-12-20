@@ -9,7 +9,7 @@ function sendWhatsAppMessage(message) {
     }
 
     // Limpia el número: deja SOLO dígitos
-    const phone = String(3764725830).replace(/\D/g, "");
+    const phone = String(+5493764725830).replace(/\D/g, "");
 
     if (!phone) {
         console.error("Número de WhatsApp inválido:", WHATSAPP_PHONE);
