@@ -4,29 +4,23 @@
 
 :root {
     --ease-premium: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-apple: cubic-bezier(0.4, 0, 0.2, 1);
     --duration-fast: 200ms;
     --duration-normal: 400ms;
 }
 
-/* --- 1. Animación de Entrada (Fade In + Slide Up) --- */
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* --- 1. Scroll Reveal System --- */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s var(--ease-apple), transform 0.8s var(--ease-apple);
+    will-change: opacity, transform;
 }
 
-/* Aplicar a tarjetas, detalles de producto y elementos clave */
-.card, #product-detail-container, .hero, .benefit-item, .category-card {
-    animation: fadeInUp var(--duration-normal) var(--ease-premium) forwards;
-    opacity: 0; /* Estado inicial invisible */
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
-
-/* Retraso escalonado (Stagger) para los primeros items de la grilla */
-.card:nth-child(1) { animation-delay: 50ms; }
-.card:nth-child(2) { animation-delay: 100ms; }
-.card:nth-child(3) { animation-delay: 150ms; }
-.card:nth-child(4) { animation-delay: 200ms; }
-.card:nth-child(5) { animation-delay: 250ms; }
-.card:nth-child(6) { animation-delay: 300ms; }
 
 /* --- 2. Tarjetas: Hover Premium --- */
 .card {

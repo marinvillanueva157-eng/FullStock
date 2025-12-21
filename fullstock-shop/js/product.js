@@ -40,11 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         
         container.innerHTML = `
-            <div class="product-gallery">
+            <div class="product-gallery reveal">
                 ${galleryHTML}
             </div>
 
-            <div class="product-info">
+            <div class="product-info reveal">
                 <p class="category">${product.category}</p>
                 <h1>${product.title}</h1>
                 <p class="price">${window.formatCurrency(product.price)}</p>
