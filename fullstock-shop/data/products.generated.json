@@ -53,7 +53,20 @@
     "stock": 0,
     "tags": [],
     "images": [
-      
+      "assets/products/casco/1.webp"
+    ]
+  },
+  {
+    "id": "cargador-iphone",
+    "title": "cargador Iphone",
+    "description": "",
+    "category": "General",
+    "price": 0,
+    "featured": false,
+    "stock": 0,
+    "tags": [],
+    "images": [
+      "assets/products/cargador-iphone/1.webp"
     ]
   }
 ]
