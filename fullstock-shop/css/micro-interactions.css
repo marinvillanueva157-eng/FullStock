@@ -1,0 +1,67 @@
+/* =========================================
+   Micro-interacciones FullStock Shop
+   ========================================= */
+
+:root {
+    --ease-premium: cubic-bezier(0.25, 1, 0.5, 1);
+    --duration-fast: 200ms;
+    --duration-normal: 400ms;
+}
+
+/* --- 1. Animación de Entrada (Fade In + Slide Up) --- */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Aplicar a tarjetas, detalles de producto y elementos clave */
+.card, #product-detail-container, .hero, .benefit-item, .category-card {
+    animation: fadeInUp var(--duration-normal) var(--ease-premium) forwards;
+    opacity: 0; /* Estado inicial invisible */
+}
+
+/* Retraso escalonado (Stagger) para los primeros items de la grilla */
+.card:nth-child(1) { animation-delay: 50ms; }
+.card:nth-child(2) { animation-delay: 100ms; }
+.card:nth-child(3) { animation-delay: 150ms; }
+.card:nth-child(4) { animation-delay: 200ms; }
+.card:nth-child(5) { animation-delay: 250ms; }
+.card:nth-child(6) { animation-delay: 300ms; }
+
+/* --- 2. Tarjetas: Hover Premium --- */
+.card {
+    transition: transform var(--duration-normal) var(--ease-premium), 
+                box-shadow var(--duration-normal) var(--ease-premium);
+    will-change: transform, box-shadow;
+}
+
+.card:hover {
+    transform: scale(1.01) translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08); /* Elevación sutil */
+    z-index: 2;
+}
+
+/* --- 3. Botones: Feedback Táctil --- */
+.btn, button {
+    transition: transform var(--duration-fast) var(--ease-premium),
+                filter var(--duration-fast) ease;
+}
+
+.btn:active, button:active {
+    transform: scale(0.96); /* Reducción al click */
+    filter: brightness(0.95);
+}
+
+/* --- 4. Carga de Imágenes Suave --- */
+@keyframes imageFadeIn {
+    from { opacity: 0; filter: blur(2px); }
+    to { opacity: 1; filter: blur(0); }
+}
+
+.card-image, #main-product-image, .thumb {
+    animation: imageFadeIn 0.6s ease-out forwards;
+}
+
+/* --- 5. Admin Panel --- */
+tr { transition: background-color var(--duration-fast) ease; }
+tr:hover { background-color: rgba(0, 0, 0, 0.02); }
