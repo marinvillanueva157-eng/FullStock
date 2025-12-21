@@ -145,9 +145,20 @@ document.addEventListener('DOMContentLoaded', async () => {
           <input type="text" id="address" required>
 
           <label for="addressInput">Ubicación / Dirección (autocompletado)</label>
-          <input id="addressInput" type="text"
-                 placeholder="Escribí tu barrio, calle y ciudad..."
-                 autocomplete="off" />
+
+          <!-- ✅ CAMBIO MÍNIMO: input + botón al lado -->
+          <div style="display:flex; gap:10px; align-items:center;">
+            <input id="addressInput" type="text"
+                   placeholder="Escribí tu barrio, calle y ciudad..."
+                   autocomplete="off" style="flex:1;" />
+            <button type="button" id="use-location-btn" class="btn btn-secondary">
+              Usar mi ubicación
+            </button>
+          </div>
+
+          <!-- ✅ CAMBIO MÍNIMO: status -->
+          <small id="gpsStatus" style="display:block; margin-top:8px; opacity:0.85;"></small>
+
           <div id="addressSuggestions" class="suggestions"></div>
 
           <input id="addressChosen" type="hidden" />
@@ -169,6 +180,51 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Inicializar el autocompletado ahora que el input existe en el DOM
     if (window.initLocationAutocomplete) window.initLocationAutocomplete();
+
+    // ✅ CAMBIO MÍNIMO: Botón "Usar mi ubicación" (GPS) sin API externa
+    const useBtn = document.getElementById('use-location-btn');
+    const gpsStatus = document.getElementById('gpsStatus');
+
+    useBtn?.addEventListener('click', () => {
+      if (!('geolocation' in navigator)) {
+        alert('Tu navegador no soporta ubicación.');
+        return;
+      }
+
+      useBtn.disabled = true;
+      if (gpsStatus) gpsStatus.textContent = 'Pidiendo permiso de ubicación…';
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+
+          // Guardar coords en hidden inputs ya existentes
+          const latEl = document.getElementById('addressLat');
+          const lonEl = document.getElementById('addressLon');
+          if (latEl) latEl.value = String(lat);
+          if (lonEl) lonEl.value = String(lon);
+
+          // Escribir algo útil en el input si está vacío
+          const input = document.getElementById('addressInput');
+          if (input && !input.value.trim()) {
+            input.value = 'Ubicación detectada (GPS)';
+          }
+
+          if (gpsStatus) gpsStatus.textContent = 'Ubicación cargada ✅';
+
+          // “Cerrar” el botón luego de usarlo
+          useBtn.style.display = 'none';
+        },
+        (err) => {
+          console.warn('GPS error:', err);
+          if (gpsStatus) gpsStatus.textContent = 'No se pudo obtener ubicación. Revisá permisos.';
+          useBtn.disabled = false;
+          alert('No se pudo obtener tu ubicación. Verificá permisos de ubicación.');
+        },
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+      );
+    });
 
     // Events
     document.querySelectorAll('.cart-item-quantity').forEach(input => {
