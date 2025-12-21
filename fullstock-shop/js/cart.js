@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
+  window.__CART_LOADED__ = true;
+  console.log('[cart.js] loaded:', window.__CART_LOADED__);
+
   const cartContainer = document.getElementById('cart-container');
   const cartActionsContainer = document.getElementById('cart-actions');
 
@@ -75,6 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function render(cart, productIndex) {
+    console.log('[cart.js] render() items:', cart.length);
     if (!cart.length) {
       renderEmpty();
       return;
@@ -178,10 +182,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       </form>
     `;
 
+    console.log('[cart.js] has #addressInput:', !!document.getElementById('addressInput'));
+    console.log('[cart.js] has #use-location-btn:', !!document.getElementById('use-location-btn'));
+
     // Inicializar el autocompletado ahora que el input existe en el DOM
     if (window.initLocationAutocomplete) window.initLocationAutocomplete();
 
-    // ✅ CAMBIO MÍNIMO: Botón "Usar mi ubicación" (GPS) sin API externa
     const useBtn = document.getElementById('use-location-btn');
     const gpsStatus = document.getElementById('gpsStatus');
 
