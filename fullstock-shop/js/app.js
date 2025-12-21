@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
   const headerContainer = document.getElementById('main-header');
-  const footerContainer = document.getElementById('main-footer');
   const currentPage = window.location.pathname.split('/').pop();
 
   // --- CART UTILITIES (cliente) ---
@@ -43,42 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   `;
 
-  const footerHTML = `
-    <div class="footer-content">
-      <div class="footer-grid">
-        <div class="footer-column">
-          <h3>Institucional</h3>
-          <ul>
-            <li><a href="policies.html">Políticas de la Tienda</a></li>
-            <li><a href="#">Sobre Nosotros</a></li>
-            <li><a href="#">Términos y Condiciones</a></li>
-          </ul>
-        </div>
-        <div class="footer-column">
-          <h3>Ayuda</h3>
-          <ul>
-            <li><a href="#">Preguntas Frecuentes</a></li>
-            <li><a href="#">Cómo comprar</a></li>
-            <li><a href="#">Envíos y Devoluciones</a></li>
-          </ul>
-        </div>
-        <div class="footer-column">
-          <h3>Contacto</h3>
-          <p>
-            Lunes a Viernes de 9 a 18hs<br>
-            <a href="mailto:fullstockobera@gmail.com">fullstockobera@gmail.com</a>
-          </p>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>&copy; ${new Date().getFullYear()} FullStock Shop. Todos los derechos reservados.</p>
-      </div>
-    </div>
-  `;
-
   // --- RENDER ---
   if (headerContainer) headerContainer.innerHTML = headerHTML;
-  if (footerContainer) footerContainer.innerHTML = footerHTML;
 
   // --- GLOBALS ---
   const updateCartCount = () => {
