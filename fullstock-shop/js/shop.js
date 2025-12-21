@@ -62,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
     productsToRender.forEach((product) => {
       try {
         const card = document.createElement('div');
-        card.className = 'card reveal';
+        // Aseguramos la clase 'reveal' para la animación de entrada
+        card.className = 'card reveal'; 
 
         const safeTitle = toSafeString(product?.title, 'Producto');
         const safeCategory = toSafeString(product?.category, 'General');
