@@ -1,32 +1,36 @@
 {
   "a": {
     "price": 10000,
-    "stock": 10000,
+    "stock": 2,
     "title": "A16",
     "category": "Celulares"
   },
   "camitabanana": {
     "price": 10000,
-    "stock": 210000,
+    "stock": 5,
     "title": "Cama de mascotas",
-    "category": "Domestico"
+    "category": "Domésticos"
   },
   "reloj": {
     "price": 10000,
-    "stock": 10000,
+    "stock": 5,
     "title": "smartwatch",
-    "category": "Tegnologia"
+    "category": "Electronicos"
   },
   "joystyk": {
     "price": 10000,
-    "stock": 10000,
+    "stock": 5,
     "title": "control celu",
-    "category": "Tegnologia"
+    "category": "Electronicos"
   },
   "casco": {
-    "category": "domestico"
-   
-
-    
+    "category": "Domésticos",
+    "price": 85000,
+    "stock": 2
+  },
+  "cargador-iphone": {
+    "price": 20000,
+    "stock": 2,
+    "category": "Electrónicos"
   }
 }

@@ -142,6 +142,16 @@ const server = http.createServer((req, res) => {
 });
 
 const PORT = 5199;
+
+server.on('error', (e) => {
+  if (e.code === 'EADDRINUSE') {
+    console.log(`\n⚠️  El puerto ${PORT} ya está ocupado.`);
+    console.log(`👉 Probablemente ya tenés el servidor corriendo en otra terminal.`);
+    console.log(`👉 Podés usarlo directamente acá: http://127.0.0.1:${PORT}/admin.html\n`);
+    process.exit(0);
+  }
+});
+
 server.listen(PORT, () => {
   console.log(`✅ Admin server corriendo en http://127.0.0.1:${PORT}/admin.html`);
   // Ejecutar detección al iniciar
