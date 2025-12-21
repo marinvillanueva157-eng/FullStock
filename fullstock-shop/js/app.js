@@ -65,7 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="footer-column">
           <h3>Contacto</h3>
           <p>
-            Lunes a Viernes de 9 a 18hs
+            Lunes a Viernes de 9 a 18hs<br>
+            <a href="mailto:fullstockobera@gmail.com">fullstockobera@gmail.com</a>
           </p>
         </div>
       </div>
