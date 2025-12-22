@@ -44,14 +44,29 @@ const createSlug = (text) => {
 async function processImagePipeline(inputPath, outputPath) {
     let buffer;
     try {
-        // 1. Intentar IA: Remoción de fondo (Modelo 'medium' para alta precisión)
-        // Nota: Si falla con ENOENT resources.json, es un problema de instalación de la librería.
-        // Al quitar el fallback, el script te avisará y no subirá basura.
-        const blob = await removeBackground(inputPath, { model: 'medium' });
+        // Configuración de rutas absolutas para modelos (Fix Windows ENOENT)
+        const modelPath = path.resolve(__dirname, '../node_modules/@imgly/background-removal-node/dist/');
+        const resourcesPath = path.join(modelPath, 'resources.json');
+
+        // Verificación previa de Archivos
+        if (!fs.existsSync(resourcesPath)) {
+            console.error(`   ❌ Error Configuración IA: No se encuentra resources.json`);
+            console.error(`      Ruta buscada: ${resourcesPath}`);
+            return false;
+        }
+
+        const config = {
+            model: 'medium',
+            publicPath: `file://${modelPath.replace(/\\/g, '/')}/` 
+        };
+
+        // 1. Intentar IA: Remoción de fondo
+        const blob = await removeBackground(inputPath, config);
         buffer = Buffer.from(await blob.arrayBuffer());
     } catch (iaError) {
         // CAMBIO CRÍTICO: Si falla la IA, abortamos esta imagen.
-        console.error(`   ❌ Error IA (Fondo no removido): ${iaError.message.split('\n')[0]}`);
+        console.error(`   ❌ Error IA (Fondo no removido):`);
+        console.error(iaError.stack);
         console.error(`      -> La imagen original se conserva en 'incoming' para revisión.`);
         return false;
     }
@@ -60,12 +75,12 @@ async function processImagePipeline(inputPath, outputPath) {
         // 2. SHARP: Optimización (siempre se ejecuta)
         await sharp(buffer)
             .ensureAlpha()
-            .trim({ threshold: 25 }) // Recorte más agresivo para eliminar bordes sucios
+            .trim() // Eliminar bordes vacíos
             .resize({ width: 1000, height: 1000, fit: 'inside', withoutEnlargement: true }) 
-            .sharpen({ sigma: 1.5 }) // Nitidez agresiva
+            .sharpen() // Nitidez
             .modulate({ 
                 brightness: 1.1, 
-                saturation: 1.4  // +40% Saturación para look "vivid"
+                saturation: 1.2
             })
             .normalise() // Auto-contraste profesional (maximiza rango dinámico)
             .gamma() // Ajuste de gamma para profundidad
