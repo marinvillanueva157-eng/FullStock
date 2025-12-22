@@ -91,6 +91,10 @@ async function processImagePipeline(inputPath, outputPath) {
 
     if (validFiles.length === 0) {
         console.log("ℹ️ No hay imágenes nuevas en incoming/. Solo se verificará el JSON.");
+        if (files.length > 0) {
+            console.log(`   ⚠️  Archivos encontrados pero ignorados: ${files.join(', ')}`);
+            console.log(`   (Asegurate de que sean archivos de imagen .jpg, .jpeg, .png o .webp)`);
+        }
     }
 
     // --- 3. AGRUPAR POR PRODUCTO ---

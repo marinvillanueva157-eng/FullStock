@@ -81,5 +81,18 @@
     "images": [
       "assets/products/hair-trimmer/1.webp"
     ]
+  },
+  {
+    "id": "termo-temperatura",
+    "title": "Termo-temperatura",
+    "description": "",
+    "category": "General",
+    "price": 0,
+    "featured": false,
+    "stock": 0,
+    "tags": [],
+    "images": [
+      "assets/products/termo-temperatura/1.webp"
+    ]
   }
 ]
