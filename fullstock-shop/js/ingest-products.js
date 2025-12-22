@@ -5,6 +5,7 @@ const path = require('path');
 let sharp, removeBackground;
 try {
     sharp = require('sharp');
+    sharp.cache(false); // FIX: Evita bloqueos de archivos y errores GLib en Windows
     const imgly = require('@imgly/background-removal-node');
     removeBackground = imgly.removeBackground;
 } catch (e) {
@@ -44,27 +45,31 @@ async function processImagePipeline(inputPath, outputPath) {
     let buffer;
     try {
         // 1. Intentar IA: Remoción de fondo (Modelo 'medium' para alta precisión)
+        // Nota: Si falla con ENOENT resources.json, es un problema de instalación de la librería.
+        // Al quitar el fallback, el script te avisará y no subirá basura.
         const blob = await removeBackground(inputPath, { model: 'medium' });
         buffer = Buffer.from(await blob.arrayBuffer());
     } catch (iaError) {
-        console.warn(`   ⚠️  Fallo IA (${iaError.message.split('\n')[0]}). Usando imagen original.`);
-        // Fallback: Usar imagen original si falla la IA
-        buffer = fs.readFileSync(inputPath);
+        // CAMBIO CRÍTICO: Si falla la IA, abortamos esta imagen.
+        console.error(`   ❌ Error IA (Fondo no removido): ${iaError.message.split('\n')[0]}`);
+        console.error(`      -> La imagen original se conserva en 'incoming' para revisión.`);
+        return false;
     }
 
     try {
         // 2. SHARP: Optimización (siempre se ejecuta)
         await sharp(buffer)
             .ensureAlpha()
-            .trim({ threshold: 20 }) // Recorte inteligente (elimina sombras sucias)
+            .trim({ threshold: 25 }) // Recorte más agresivo para eliminar bordes sucios
             .resize({ width: 1000, height: 1000, fit: 'inside', withoutEnlargement: true }) 
             .sharpen({ sigma: 1.5 }) // Nitidez agresiva
             .modulate({ 
-                brightness: 1.1, // +10% Brillo (Blancos más limpios)
-                saturation: 1.3  // +30% Saturación (Colores vivos)
+                brightness: 1.1, 
+                saturation: 1.4  // +40% Saturación para look "vivid"
             })
+            .normalise() // Auto-contraste profesional (maximiza rango dinámico)
             .gamma() // Ajuste de gamma para profundidad
-            .webp({ quality: 90, effort: 6, smartSubsample: true }) // WebP Alta Calidad
+            .webp({ quality: 92, effort: 6, smartSubsample: true }) // WebP Calidad Premium
             .toFile(outputPath);
             
         return true;
