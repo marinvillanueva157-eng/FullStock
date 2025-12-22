@@ -114,6 +114,12 @@ h1, h2, h3 {
     border-bottom-color: var(--accent-green);
 }
 
+/* Ocultar la pestaña de Inicio (Home) para dejar solo Tienda, Contacto y Carrito */
+.main-nav a[href="index.html"],
+.main-nav a[href="/"] {
+    display: none !important;
+}
+
 .cart-icon-container {
     position: relative;
 }
