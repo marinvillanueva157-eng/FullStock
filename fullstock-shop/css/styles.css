@@ -99,6 +99,7 @@ h1, h2, h3 {
     list-style: none;
     display: flex;
     gap: 1.5rem;
+    align-items: center;
 }
 
 .main-nav a {
