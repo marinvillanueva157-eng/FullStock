@@ -121,16 +121,22 @@ h1, h2, h3 {
 .main-nav a[href="./index.html"],
 .main-nav a[href="/"] {
     display: none !important;
+    width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
 }
 
 /* --- NUEVO: Convertir enlace de Carrito en Icono --- */
 .main-nav a[href*="cart"],
 .main-nav a[href*="carrito"] {
     font-size: 0 !important; /* Oculta el texto "Carrito" */
-    display: flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem;
+    padding: 0 !important;
+    width: 44px; /* Tamaño fijo para asegurar que se vea el icono */
+    height: 44px;
     position: relative; /* Para posicionar el badge correctamente */
 }
 
