@@ -41,13 +41,19 @@ const createSlug = (text) => {
 
 // --- FUNCIÓN DE CURADURÍA (IA + OPTIMIZACIÓN) ---
 async function processImagePipeline(inputPath, outputPath) {
+    let buffer;
     try {
-        // 1. IA: Remoción de fondo (Local)
-        // Devuelve un Blob/Buffer con el fondo transparente
+        // 1. Intentar IA: Remoción de fondo
         const blob = await removeBackground(inputPath);
-        const buffer = Buffer.from(await blob.arrayBuffer());
+        buffer = Buffer.from(await blob.arrayBuffer());
+    } catch (iaError) {
+        console.warn(`   ⚠️  Fallo IA (${iaError.message.split('\n')[0]}). Usando imagen original.`);
+        // Fallback: Usar imagen original si falla la IA
+        buffer = fs.readFileSync(inputPath);
+    }
 
-        // 2. SHARP: Optimización Profesional
+    try {
+        // 2. SHARP: Optimización (siempre se ejecuta)
         await sharp(buffer)
             .trim() // Quita el espacio transparente sobrante alrededor del objeto
             .resize({ width: 1000, withoutEnlargement: true }) // Estandarizar tamaño máximo
@@ -60,8 +66,8 @@ async function processImagePipeline(inputPath, outputPath) {
             .toFile(outputPath);
             
         return true;
-    } catch (error) {
-        console.error(`   ⚠️ Falló el procesamiento de imagen: ${path.basename(inputPath)}`, error.message);
+    } catch (sharpError) {
+        console.error(`   ❌ Error crítico procesando imagen: ${path.basename(inputPath)}`, sharpError.message);
         return false;
     }
 }
@@ -186,6 +192,11 @@ async function processImagePipeline(inputPath, outputPath) {
             product.images = [...(product.images || []), ...newImagesPaths];
             mergedProductsCount++;
         } else {
+            // Validación: No crear producto si no hay imágenes
+            if (newImagesPaths.length === 0) {
+                console.log(`   ⚠️  Saltando creación de "${group.title}" (sin imágenes válidas).`);
+                continue;
+            }
             console.log(`   ✨ Nuevo: Creando producto en catálogo`);
             productsData.push({
                 id: slug,
