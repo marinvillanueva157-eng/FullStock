@@ -86,9 +86,13 @@ h1, h2, h3 {
 }
 
 .logo {
+    font-family: 'Orbitron', sans-serif;
     font-size: 1.5rem;
     font-weight: bold;
     color: var(--primary-neon);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--shadow-color-primary);
 }
 
 .logo img {
