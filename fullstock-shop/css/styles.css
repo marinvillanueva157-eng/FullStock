@@ -115,7 +115,9 @@ h1, h2, h3 {
 }
 
 /* Ocultar la pestaña de Inicio (Home) para dejar solo Tienda, Contacto y Carrito */
+.main-nav ul li:first-child,
 .main-nav a[href="index.html"],
+.main-nav a[href="./index.html"],
 .main-nav a[href="/"] {
     display: none !important;
 }
