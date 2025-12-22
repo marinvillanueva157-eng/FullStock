@@ -253,7 +253,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         allProducts = rawData.map((p, index) => {
           const base = p && typeof p === 'object' ? p : {};
-          const key = base.slug || base.id;
+          // FIX: Usar misma lógica que Admin para key de overrides (fallback a índice)
+          const key = base.slug || base.id || String(index + 1);
           const override = (key != null && safeOverrides[key]) ? safeOverrides[key] : {};
           const merged = { ...base, ...(override && typeof override === 'object' ? override : {}) };
 

@@ -3,34 +3,40 @@
     "price": 10000,
     "stock": 2,
     "title": "A16",
-    "category": "Celulares"
+    "category": "Celulares",
+    "description": "El mejor celular de todos"
   },
   "camitabanana": {
     "price": 10000,
     "stock": 5,
     "title": "Cama de mascotas",
-    "category": "Domésticos"
+    "category": "Domésticos",
+    "description": "dwqeqw"
   },
   "reloj": {
     "price": 10000,
     "stock": 5,
     "title": "smartwatch",
-    "category": "Electronicos"
+    "category": "Electronicos",
+    "description": "wqeqwewe"
   },
   "joystyk": {
     "price": 10000,
     "stock": 5,
     "title": "control celu",
-    "category": "Electronicos"
+    "category": "Electronicos",
+    "description": "wqeqweqwe"
   },
   "casco": {
     "category": "Domésticos",
     "price": 85000,
-    "stock": 2
+    "stock": 2,
+    "description": "qweqweqwe"
   },
   "cargador-iphone": {
     "price": 20000,
     "stock": 2,
-    "category": "Electrónicos"
+    "category": "Electrónicos",
+    "description": "wqeqweqweqwe"
   }
 }

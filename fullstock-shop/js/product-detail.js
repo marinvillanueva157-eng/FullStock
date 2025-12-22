@@ -46,8 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Esto asegura que si shop.js generó un link con ID inventado (ej: por título), aquí lo encontremos.
             const normalizedProducts = productsList.map((p, index) => {
                 const base = p || {};
-                const key = base.slug || base.id;
-                const override = (key && overrides[key]) ? overrides[key] : {};
+                // FIX: Usar misma lógica que Admin para key de overrides (fallback a índice)
+                const key = base.slug || base.id || String(index + 1);
+                const override = (overrides && overrides[key]) ? overrides[key] : {};
                 const merged = { ...base, ...override };
 
                 // Generar claves de búsqueda idénticas a shop.js
