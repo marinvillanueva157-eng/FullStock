@@ -68,5 +68,16 @@
     "images": [
       "assets/products/cargador-iphone/1.webp"
     ]
+  },
+  {
+    "id": "hair-trimmer",
+    "title": "Hair-trimmer",
+    "description": "",
+    "category": "General",
+    "price": 0,
+    "featured": false,
+    "stock": 0,
+    "tags": [],
+    "images": []
   }
 ]
