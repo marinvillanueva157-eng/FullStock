@@ -42,13 +42,28 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const productsList = Array.isArray(baseData) ? baseData : baseData.products || [];
 
-            // 2. Buscar producto por slug o ID
-            let product = productsList.find(p => 
-                String(p.slug) === productId || String(p.id) === productId
-            );
+            // 2. Buscar producto (Lógica robusta)
+            const targetId = String(productId).trim();
+            
+            let product = productsList.find(p => {
+                const pId = String(p.id || '').trim();
+                const pSlug = String(p.slug || '').trim();
+                return pId === targetId || pSlug === targetId;
+            });
+
+            // Fallback: Si es un número y no se encontró por ID, buscar por índice (ajuste para shop.js)
+            if (!product && !isNaN(targetId)) {
+                const index = parseInt(targetId) - 1; // shop.js usa base 1
+                if (productsList[index]) {
+                    console.log(`Producto encontrado por índice: ${index} (ID buscado: ${targetId})`);
+                    product = productsList[index];
+                }
+            }
 
             if (!product) {
+                console.warn(`Producto no encontrado. Buscado: "${targetId}" en lista de ${productsList.length} items.`);
                 els.title.textContent = "Producto no encontrado";
+                els.desc.textContent = `No pudimos encontrar el producto con ID: ${targetId}`;
                 return;
             }
 
