@@ -123,6 +123,36 @@ h1, h2, h3 {
     display: none !important;
 }
 
+/* --- NUEVO: Convertir enlace de Carrito en Icono --- */
+.main-nav a[href*="cart"],
+.main-nav a[href*="carrito"] {
+    font-size: 0 !important; /* Oculta el texto "Carrito" */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    position: relative; /* Para posicionar el badge correctamente */
+}
+
+.main-nav a[href*="cart"]::before,
+.main-nav a[href*="carrito"]::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 24px;
+    background-color: var(--primary-neon);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='21' r='1'%3E%3C/circle%3E%3Ccircle cx='20' cy='21' r='1'%3E%3C/circle%3E%3Cpath d='M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6'%3E%3C/path%3E%3C/svg%3E") no-repeat center;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='21' r='1'%3E%3C/circle%3E%3Ccircle cx='20' cy='21' r='1'%3E%3C/circle%3E%3Cpath d='M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6'%3E%3C/path%3E%3C/svg%3E") no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    transition: background-color var(--transition-fast);
+}
+
+.main-nav a[href*="cart"]:hover::before,
+.main-nav a[href*="carrito"]:hover::before {
+    background-color: var(--accent-green);
+}
+
 .cart-icon-container {
     position: relative;
 }
