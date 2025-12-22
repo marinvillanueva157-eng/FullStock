@@ -43,8 +43,8 @@ const createSlug = (text) => {
 async function processImagePipeline(inputPath, outputPath) {
     let buffer;
     try {
-        // 1. Intentar IA: Remoción de fondo
-        const blob = await removeBackground(inputPath);
+        // 1. Intentar IA: Remoción de fondo (Modelo 'medium' para alta precisión)
+        const blob = await removeBackground(inputPath, { model: 'medium' });
         buffer = Buffer.from(await blob.arrayBuffer());
     } catch (iaError) {
         console.warn(`   ⚠️  Fallo IA (${iaError.message.split('\n')[0]}). Usando imagen original.`);
@@ -55,14 +55,16 @@ async function processImagePipeline(inputPath, outputPath) {
     try {
         // 2. SHARP: Optimización (siempre se ejecuta)
         await sharp(buffer)
-            .trim() // Quita el espacio transparente sobrante alrededor del objeto
-            .resize({ width: 1000, withoutEnlargement: true }) // Estandarizar tamaño máximo
-            .sharpen() // Mejora nitidez (foco)
+            .ensureAlpha()
+            .trim({ threshold: 20 }) // Recorte inteligente (elimina sombras sucias)
+            .resize({ width: 1000, height: 1000, fit: 'inside', withoutEnlargement: true }) 
+            .sharpen({ sigma: 1.5 }) // Nitidez agresiva
             .modulate({ 
-                brightness: 1.05, // +5% Brillo (Look e-commerce)
-                saturation: 1.1   // +10% Saturación (Colores vivos)
+                brightness: 1.1, // +10% Brillo (Blancos más limpios)
+                saturation: 1.3  // +30% Saturación (Colores vivos)
             })
-            .webp({ quality: 85, effort: 6 }) // Conversión a WebP optimizada
+            .gamma() // Ajuste de gamma para profundidad
+            .webp({ quality: 90, effort: 6, smartSubsample: true }) // WebP Alta Calidad
             .toFile(outputPath);
             
         return true;
