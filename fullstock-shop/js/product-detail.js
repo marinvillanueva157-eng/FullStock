@@ -42,35 +42,42 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const productsList = Array.isArray(baseData) ? baseData : baseData.products || [];
 
-            // 2. Buscar producto (Lógica robusta)
-            const targetId = String(productId).trim();
-            
-            let product = productsList.find(p => {
-                const pId = String(p.id || '').trim();
-                const pSlug = String(p.slug || '').trim();
-                return pId === targetId || pSlug === targetId;
+            // 2. Normalizar lista (Merge overrides + Generar IDs/Slugs igual que shop.js)
+            // Esto asegura que si shop.js generó un link con ID inventado (ej: por título), aquí lo encontremos.
+            const normalizedProducts = productsList.map((p, index) => {
+                const base = p || {};
+                const key = base.slug || base.id;
+                const override = (key && overrides[key]) ? overrides[key] : {};
+                const merged = { ...base, ...override };
+
+                // Generar claves de búsqueda idénticas a shop.js
+                const indexId = String(index + 1);
+                const originalId = String(base.id || '').trim();
+                const slug = String(merged.slug || merged.id || merged.title || indexId).trim();
+
+                return { 
+                    ...merged, 
+                    id: merged.id || indexId, // Asegurar ID para renderizado
+                    _searchSlug: slug, 
+                    _searchIndex: indexId, 
+                    _searchOriginal: originalId 
+                };
             });
 
-            // Fallback: Si es un número y no se encontró por ID, buscar por índice (ajuste para shop.js)
-            if (!product && !isNaN(targetId)) {
-                const index = parseInt(targetId) - 1; // shop.js usa base 1
-                if (productsList[index]) {
-                    console.log(`Producto encontrado por índice: ${index} (ID buscado: ${targetId})`);
-                    product = productsList[index];
-                }
-            }
+            // 3. Buscar producto en la lista normalizada
+            const targetId = String(productId).trim();
+            
+            let product = normalizedProducts.find(p => {
+                return p._searchSlug === targetId || 
+                       p._searchIndex === targetId || 
+                       p._searchOriginal === targetId;
+            });
 
             if (!product) {
                 console.warn(`Producto no encontrado. Buscado: "${targetId}" en lista de ${productsList.length} items.`);
                 els.title.textContent = "Producto no encontrado";
                 els.desc.textContent = `No pudimos encontrar el producto con ID: ${targetId}`;
                 return;
-            }
-
-            // 3. Aplicar Overrides
-            const key = product.slug || product.id;
-            if (overrides[key]) {
-                product = { ...product, ...overrides[key] };
             }
 
             renderProduct(product);
