@@ -1,15 +1,17 @@
 /* --- VARIABLES Y ESTILOS GLOBALES --- */
 :root {
-    --bg-color: #0B0F14;
-    --primary-neon: #18C7FF;
-    --secondary-blue: #2B6CFF;
-    --accent-green: #19F2A6;
-    --text-color: #EAF2FF;
-    --card-bg: rgba(24, 38, 53, 0.5);
-    --border-color: rgba(43, 108, 255, 0.3);
-    --shadow-color-primary: rgba(24, 199, 255, 0.2);
-    --shadow-color-secondary: rgba(43, 108, 255, 0.2);
-    --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    /* Paleta Neón basada en el logo */
+    --bg-color: #050505;       /* Negro profundo */
+    --primary-neon: #00f3ff;     /* Cian Neón (más brillante) */
+    --secondary-blue: #0044ff;  /* Azul Eléctrico */
+    --accent-green: var(--primary-neon); /* Unificamos acentos al Cian */
+    --text-color: #ffffff;       /* Blanco puro para contraste */
+    --card-bg: #0a0a0a;       /* Negro más sutil para tarjetas */
+    --border-color: rgba(0, 243, 255, 0.25); /* Borde Cian */
+    --shadow-color-primary: rgba(0, 243, 255, 0.4);
+    --shadow-color-secondary: rgba(0, 68, 255, 0.3);
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Montserrat', sans-serif;
     --transition-fast: 200ms ease-in-out;
     --transition-slow: 300ms ease-in-out;
 }
@@ -21,7 +23,7 @@
 }
 
 body {
-    font-family: var(--font-family);
+    font-family: var(--font-body);
     background-color: var(--bg-color);
     color: var(--text-color);
     line-height: 1.7;
@@ -55,6 +57,13 @@ img {
     font-size: 2.8rem;
     margin-bottom: 2.5rem;
     text-shadow: 0 0 15px var(--shadow-color-primary);
+}
+
+h1, h2, h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
 }
 
 /* --- HEADER Y FOOTER --- */
@@ -112,7 +121,7 @@ img {
 #cart-count {
     position: absolute;
     top: -8px;
-    right: -12px;
+    right: -10px;
     background-color: var(--accent-green);
     color: var(--bg-color);
     font-size: 0.75rem;
@@ -123,6 +132,7 @@ img {
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 0 8px var(--accent-green);
 }
 
 
@@ -198,10 +208,10 @@ img {
 
 .btn-primary:hover {
     background-color: var(--accent-green);
-    border-color: var(--accent-green);
     color: var(--bg-color);
-    transform: translateY(-2px);
-    box-shadow: 0 0 20px rgba(25, 242, 166, 0.4);
+    transform: scale(1.02);
+    border-color: var(--accent-green);
+    box-shadow: 0 0 20px var(--shadow-color-primary);
 }
 
 .btn-secondary {
@@ -214,6 +224,21 @@ img {
     background-color: var(--primary-neon);
     color: var(--bg-color);
 }
+
+/* --- EFECTOS NEÓN ESPECÍFICOS --- */
+.neon-text {
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3), 0 0 20px var(--shadow-color-primary);
+}
+
+.neon-glow {
+    box-shadow: 0 0 15px var(--shadow-color-secondary);
+}
+
+.neon-glow:hover {
+    filter: brightness(1.1);
+}
+
 
 /* --- CARD DE PRODUCTO (Glassmorphism) --- */
 .card {
@@ -469,6 +494,35 @@ img {
 }
 .static-content h2 { color: var(--primary-neon); margin-bottom: 1rem; }
 .static-content p { margin-bottom: 1rem; }
+
+/* --- PÁGINA DE CONTACTO (NUEVOS ELEMENTOS) --- */
+.hero-section {
+    text-align: center;
+    padding: 3rem 0 1rem;
+}
+
+.hero-subtitle {
+    color: var(--primary-neon);
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    margin-top: -1.5rem;
+}
+
+.support-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    margin: 2rem auto;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: rgba(0, 243, 255, 0.05);
+    max-width: 600px;
+}
 
 /* --- RESPONSIVE DESIGN --- */
 @media (max-width: 768px) {
