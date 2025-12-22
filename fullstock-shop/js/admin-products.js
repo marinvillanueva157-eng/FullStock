@@ -118,7 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
         stock: toNumber(merged.stock, 0),
         title: String(merged.title || 'Producto sin nombre'),
         category: String(merged.category || 'General'),
-        images: Array.isArray(merged.images) ? merged.images : []
+        images: Array.isArray(merged.images) ? merged.images : [],
+        description: String(merged.description || '')
       };
     });
   };
@@ -129,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!Array.isArray(products) || products.length === 0) {
       tableBody.innerHTML =
-        '<tr><td colspan="6" style="text-align:center; padding: 20px;">No se encontraron productos.</td></tr>';
+        '<tr><td colspan="7" style="text-align:center; padding: 20px;">No se encontraron productos.</td></tr>';
       return;
     }
 
@@ -162,6 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>
           <input type="text" class="edit-input" data-slug="${slug}" data-field="category"
                  value="${String(product.category || 'General')}" style="width: 100%;">
+        </td>
+        <td>
+          <input type="text" class="edit-input" data-slug="${slug}" data-field="description"
+                 value="${String(product.description || '')}" style="width: 100%; min-width: 250px;" placeholder="Breve descripción...">
         </td>
       `;
       tableBody.appendChild(row);
@@ -237,8 +242,8 @@ document.addEventListener('DOMContentLoaded', () => {
           continue;
         }
 
-        // title / category
-        if (field === 'title' || field === 'category') {
+        // title / category / description
+        if (field === 'title' || field === 'category' || field === 'description') {
           const newVal = String(raw ?? '').trim();
           const baseVal = String(base[field] ?? '').trim();
           if (newVal === baseVal) {
@@ -273,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (field === 'title' || field === 'category') {
+    if (field === 'title' || field === 'category' || field === 'description') {
       markDraft(slug, field, el.value);
       return;
     }
