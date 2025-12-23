@@ -54,7 +54,7 @@ function updateGeneratedFromIncoming() {
                         price: 0,
                         stock: 0,
                         category: "Sin categoría",
-                        image: `incoming/${file}`
+                        images: [`incoming/${file}`]
                     });
                     changed = true;
                     console.log(`✨ Nuevo producto detectado en incoming: ${file}`);
@@ -72,7 +72,13 @@ function updateGeneratedFromIncoming() {
 
 // --- FUNCIONES ORIGINALES ---
 function send(res, status, payload, contentType = 'text/plain; charset=utf-8') {
-  res.writeHead(status, { 'Content-Type': contentType, 'Cache-Control': 'no-store' });
+  res.writeHead(status, { 
+    'Content-Type': contentType, 
+    'Cache-Control': 'no-store',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  });
   if (Buffer.isBuffer(payload)) return res.end(payload);
   if (typeof payload === 'string') return res.end(payload);
   return res.end(JSON.stringify(payload, null, 2));
@@ -116,11 +122,18 @@ function serveStatic(req, res) {
 }
 
 const server = http.createServer((req, res) => {
-  if (req.url === '/api/overrides' && req.method === 'GET') {
+  // Manejo de Preflight (CORS)
+  if (req.method === 'OPTIONS') {
+    return send(res, 204, '');
+  }
+
+  const urlPath = req.url.split('?')[0]; // Ignorar query params
+
+  if (urlPath === '/api/overrides' && req.method === 'GET') {
     return send(res, 200, safeReadOverrides(), 'application/json; charset=utf-8');
   }
 
-  if (req.url === '/api/overrides' && req.method === 'POST') {
+  if (urlPath === '/api/overrides' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', () => {

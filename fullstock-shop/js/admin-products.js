@@ -366,7 +366,8 @@ document.addEventListener('DOMContentLoaded', () => {
           price: toNumber(base.price, 0),
           stock: toNumber(base.stock, 0),
           category: String(base.category || 'General'),
-          images: Array.isArray(base.images) ? base.images : []
+          images: Array.isArray(base.images) ? base.images : [],
+          description: String(base.description || '')
         };
       });
 
