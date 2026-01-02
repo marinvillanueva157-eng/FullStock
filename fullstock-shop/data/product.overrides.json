@@ -38,5 +38,12 @@
     "stock": 2,
     "category": "Electrónicos",
     "description": "wqeqweqweqwe"
+  },
+  "luz-led": {
+    "title": "Luz led ultra",
+    "price": 85000,
+    "stock": 90,
+    "category": "Luces",
+    "description": "lucesled"
   }
 }

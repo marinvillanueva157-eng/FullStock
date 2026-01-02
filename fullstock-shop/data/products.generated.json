@@ -94,5 +94,15 @@
     "images": [
       "assets/products/termo-temperatura/1.webp"
     ]
+  },
+  {
+    "id": "luz-led",
+    "title": "luz led",
+    "price": 0,
+    "stock": 0,
+    "category": "Sin categoría",
+    "images": [
+      "incoming/luz-led.jpeg"
+    ]
   }
 ]
